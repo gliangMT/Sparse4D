@@ -195,7 +195,7 @@ class Sparse4DHead(BaseModule):
         if self.training and hasattr(self.sampler, "get_dn_anchors"):
             if "instance_id" in metas["img_metas"][0]:
                 gt_instance_id = [
-                    torch.from_numpy(x["instance_id"]).cuda()
+                    torch.from_numpy(x["instance_id"]).musa()
                     for x in metas["img_metas"]
                 ]
             else:
@@ -431,11 +431,13 @@ class Sparse4DHead(BaseModule):
             num_pos = max(
                 reduce_mean(torch.sum(mask).to(dtype=reg.dtype)), 1.0
             )
-            if self.cls_threshold_to_reg > 0:
-                threshold = self.cls_threshold_to_reg
-                mask = torch.logical_and(
-                    mask, cls.max(dim=-1).values.sigmoid() > threshold
-                )
+            
+            # 注释掉分类分数阈值筛选能运行脚本
+            # if self.cls_threshold_to_reg > 0:
+            #     threshold = self.cls_threshold_to_reg
+            #     mask = torch.logical_and(
+            #         mask, cls.max(dim=-1).values.sigmoid() > threshold
+            #     )
 
             cls = cls.flatten(end_dim=1)
             cls_target = cls_target.flatten(end_dim=1)

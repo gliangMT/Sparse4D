@@ -13,7 +13,7 @@ case $HW in
         export CUDA_VISIBLE_DEVICES=0
         ;;
     "MUSA")
-        export MUSA_VISIBLE_DEVICES=0
+        export MUSA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
         ;;
     *)
         echo "Unsupported hardware: ${HW}. Exiting."

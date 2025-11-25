@@ -56,11 +56,11 @@ LGD 1.89
 # ================ base config ===================
 plugin = True
 plugin_dir = "projects/mmdet3d_plugin/"
-dist_params = dict(backend="nccl")
+dist_params = dict(backend="mccl") # musa env
 log_level = "INFO"
 work_dir = None
 
-total_batch_size = 48
+total_batch_size = 256   # origin value: 48
 num_gpus = 8
 batch_size = total_batch_size // num_gpus
 num_iters_per_epoch = int(28130 // (num_gpus * batch_size))
@@ -389,7 +389,7 @@ data = dict(
     workers_per_gpu=batch_size,
     train=dict(
         **data_basic_config,
-        ann_file=anno_root + "nuscenes_infos_train.pkl",
+        ann_file=anno_root + "nuscenes-mini_infos_train.pkl",  # change to nuscenes-mini manually for fast debug
         pipeline=train_pipeline,
         test_mode=False,
         data_aug_conf=data_aug_conf,
@@ -399,7 +399,7 @@ data = dict(
     ),
     val=dict(
         **data_basic_config,
-        ann_file=anno_root + "nuscenes_infos_val.pkl",
+        ann_file=anno_root + "nuscenes-mini_infos_val.pkl",
         pipeline=test_pipeline,
         data_aug_conf=data_aug_conf,
         test_mode=True,
@@ -408,7 +408,7 @@ data = dict(
     ),
     test=dict(
         **data_basic_config,
-        ann_file=anno_root + "nuscenes_infos_val.pkl",
+        ann_file=anno_root + "nuscenes-mini_infos_val.pkl",
         pipeline=test_pipeline,
         data_aug_conf=data_aug_conf,
         test_mode=True,
@@ -436,9 +436,17 @@ lr_config = dict(
     warmup_ratio=1.0 / 3,
     min_lr_ratio=1e-3,
 )
+
+# single GPU
+# runner = dict(
+#     type="IterBasedRunner",  
+#     max_iters=num_iters_per_epoch * num_epochs,
+# )
+
+# multi GPU
 runner = dict(
-    type="IterBasedRunner",
-    max_iters=num_iters_per_epoch * num_epochs,
+    type="EpochBasedRunner",  # single GPU
+    max_epochs=num_epochs,
 )
 
 # ================== eval ========================

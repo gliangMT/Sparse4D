@@ -10,7 +10,7 @@ from torch.utils.data.sampler import Sampler
 
 
 # https://github.com/open-mmlab/mmdetection/blob/3b72b12fe9b14de906d1363982b9fba05e7d47c1/mmdet/core/utils/dist_utils.py#L157
-def sync_random_seed(seed=None, device="cuda"):
+def sync_random_seed(seed=None, device="musa"):
     """Make sure different ranks share the same seed.
     All workers must call this function, otherwise it will deadlock.
     This method is generally used in `DistributedSampler`,
@@ -24,7 +24,7 @@ def sync_random_seed(seed=None, device="cuda"):
     Args:
         seed (int, Optional): The seed. Default to None.
         device (str): The device where the seed will be put on.
-            Default to 'cuda'.
+            Default to 'musa'.
     Returns:
         int: Seed to be used.
     """
@@ -83,6 +83,10 @@ class GroupInBatchSampler(Sampler):
         self.group_sizes = np.bincount(self.flag)
         self.groups_num = len(self.group_sizes)
         self.global_batch_size = batch_size * world_size
+        
+        # =========== Debugging Assertion ===========
+        print(f"[Debug] self.groups_num: {self.groups_num}, self.global_batch_size: {self.global_batch_size}")
+        
         assert self.groups_num >= self.global_batch_size
 
         # Now, for efficiency, make a dict group_idx: List[dataset sample_idxs]

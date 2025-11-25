@@ -4,7 +4,11 @@ from typing import List, Optional, Tuple
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.cuda.amp.autocast_mode import autocast
+
+if hasattr(torch, 'musa'):
+    from torch_musa.core.amp.autocast_mode import autocast
+else:
+    from torch.cuda.amp.autocast_mode import autocast
 
 from mmcv.cnn import Linear, build_activation_layer, build_norm_layer
 from mmcv.runner.base_module import Sequential, BaseModule

@@ -37,7 +37,7 @@ def parse_args():
 
 def get_max_memory(model):
     device = getattr(model, "output_device", None)
-    mem = torch.cuda.max_memory_allocated(device=device)
+    mem = torch.musa.max_memory_allocated(device=device)
     mem_mb = torch.tensor(
         [mem / (1024 * 1024)], dtype=torch.int, device=device
     )
@@ -88,12 +88,12 @@ def main():
     # benchmark with several samples and take the average
     max_memory = 0
     for i, data in enumerate(data_loader):
-        # torch.cuda.synchronize()
+        # torch.musa.synchronize()
         with torch.no_grad():
             start_time = time.perf_counter()
             model(return_loss=False, rescale=True, **data)
 
-            torch.cuda.synchronize()
+            torch.musa.synchronize()
             elapsed = time.perf_counter() - start_time
             max_memory = max(max_memory, get_max_memory(model))
 

@@ -89,7 +89,7 @@ def parse_args():
     parser.add_argument("--gpus-per-machine", type=int, default=8)
     parser.add_argument(
         "--launcher",
-        choices=["none", "pytorch", "slurm", "mpi", "mpi_nccl"],
+        choices=["none", "pytorch", "slurm", "mpi", "mpi_mccl"],
         default="none",
         help="job launcher",
     )
@@ -180,7 +180,7 @@ def main():
     # init distributed env first, since logger depends on the dist info.
     if args.launcher == "none":
         distributed = False
-    elif args.launcher == "mpi_nccl":
+    elif args.launcher == "mpi_mccl":
         distributed = True
 
         import mpi4py.MPI as MPI
@@ -193,14 +193,14 @@ def main():
             % (mpi_local_rank, mpi_world_size)
         )
 
-        # num_gpus = torch.cuda.device_count()
+        # num_gpus = torch.musa.device_count()
         device_ids_on_machines = list(range(args.gpus_per_machine))
         str_ids = list(map(str, device_ids_on_machines))
-        os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(str_ids)
-        torch.cuda.set_device(mpi_local_rank % args.gpus_per_machine)
+        os.environ["MUSA_VISIBLE_DEVICES"] = ",".join(str_ids)
+        torch.musa.set_device(mpi_local_rank % args.gpus_per_machine)
 
         dist.init_process_group(
-            backend="nccl",
+            backend="mccl",
             init_method=args.dist_url,
             world_size=mpi_world_size,
             rank=mpi_local_rank,

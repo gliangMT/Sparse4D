@@ -1,5 +1,4 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import torch_musa
 from __future__ import division
 import sys
 import os
@@ -11,6 +10,7 @@ import copy
 import mmcv
 import time
 import torch
+import torch_musa
 import warnings
 from mmcv import Config, DictAction
 from mmcv.runner import get_dist_info, init_dist
@@ -94,7 +94,7 @@ def parse_args():
         default="none",
         help="job launcher",
     )
-    parser.add_argument("--local_rank", type=int, default=0)
+    parser.add_argument("--local-rank", type=int, default=0)
     parser.add_argument(
         "--autoscale-lr",
         action="store_true",
