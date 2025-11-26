@@ -147,7 +147,7 @@ model = dict(
     ),
     head=dict(
         type="Sparse4DHead",
-        cls_threshold_to_reg=0.05,
+        cls_threshold_to_reg=0.02,
         decouple_attn=decouple_attn,
         instance_bank=dict(
             type="InstanceBank",
