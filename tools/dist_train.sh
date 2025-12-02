@@ -40,4 +40,6 @@ torchrun \
     $TRAIN_SCRIPT \
     $CONFIG \
     --launcher pytorch \
+    --enable-musa-tf32 \
+    --channel-last \
     ${@:3}
